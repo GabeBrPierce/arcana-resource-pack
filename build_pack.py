@@ -122,9 +122,14 @@ def build():
     items = os.path.join(root, "assets", "arcana", "items")
     os.makedirs(models)
     os.makedirs(items)
-    shutil.copy(os.path.join(HERE, "models", "broom.json"), os.path.join(models, "broom.json"))
-    with open(os.path.join(items, "broom.json"), "w", encoding="utf-8") as f:
-        json.dump({"model": {"type": "minecraft:model", "model": "arcana:item/broom"}}, f, indent=2)
+    # Items with their own models: the broom (from Blockbench) and the Eek's flat shadow.
+    item_tex = os.path.join(root, "assets", "arcana", "textures", "item")
+    os.makedirs(item_tex)
+    for name in ("broom", "eek"):
+        shutil.copy(os.path.join(HERE, "models", name + ".json"), os.path.join(models, name + ".json"))
+        with open(os.path.join(items, name + ".json"), "w", encoding="utf-8") as f:
+            json.dump({"model": {"type": "minecraft:model", "model": "arcana:item/" + name}}, f, indent=2)
+    shutil.copy(os.path.join(HERE, "textures", "eek.png"), os.path.join(item_tex, "eek.png"))
     # Flying brooms ride an invisible pale oak chest boat: its texture is fully transparent, and the
     # broom model is shown under the rider instead. (Pale oak chest boats look invisible to everyone.)
     boat = os.path.join(root, "assets", "minecraft", "textures", "entity", "chest_boat")
