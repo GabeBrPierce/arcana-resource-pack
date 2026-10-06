@@ -114,8 +114,22 @@ def build():
         json.dump({"providers": [{"type": "bitmap", "file": "arcana:font/planets.png",
                                   "ascent": 7, "height": 8, "chars": [chars]}]}, f, ensure_ascii=False, indent=2)
     with open(os.path.join(root, "pack.mcmeta"), "w", encoding="utf-8") as f:
-        json.dump({"pack": {"description": "Arcana: ritual symbols and more",
+        json.dump({"pack": {"description": "Arcana: ritual symbols, brooms and more",
                             "min_format": PACK_FORMAT_MIN, "max_format": PACK_FORMAT_MAX}}, f, indent=2)
+
+    # The broom: an item model (resource-pack/models/broom.json, from Blockbench) and its item definition.
+    models = os.path.join(root, "assets", "arcana", "models", "item")
+    items = os.path.join(root, "assets", "arcana", "items")
+    os.makedirs(models)
+    os.makedirs(items)
+    shutil.copy(os.path.join(HERE, "models", "broom.json"), os.path.join(models, "broom.json"))
+    with open(os.path.join(items, "broom.json"), "w", encoding="utf-8") as f:
+        json.dump({"model": {"type": "minecraft:model", "model": "arcana:item/broom"}}, f, indent=2)
+    # Flying brooms ride an invisible pale oak chest boat: its texture is fully transparent, and the
+    # broom model is shown under the rider instead. (Pale oak chest boats look invisible to everyone.)
+    boat = os.path.join(root, "assets", "minecraft", "textures", "entity", "chest_boat")
+    os.makedirs(boat)
+    Image.new("RGBA", (128, 128), (0, 0, 0, 0)).save(os.path.join(boat, "pale_oak.png"))
 
     # Preview at 8x scale for checking the glyphs by eye.
     img.resize((img.width * 8, img.height * 8), Image.NEAREST).save(os.path.join(OUT, "preview.png"))
