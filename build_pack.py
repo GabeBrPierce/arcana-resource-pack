@@ -139,6 +139,19 @@ def build():
     # Preview at 8x scale for checking the glyphs by eye.
     img.resize((img.width * 8, img.height * 8), Image.NEAREST).save(os.path.join(OUT, "preview.png"))
 
+    # Creature models: BetterModel builds its own pack on the server (plugins/BetterModel/build.zip).
+    # scripts/publish-pack.sh fetches a copy to resource-pack/bettermodel/build.zip; its files live
+    # entirely under assets/bettermodel/, so they merge in without touching ours.
+    bm = os.path.join(HERE, "bettermodel", "build.zip")
+    if os.path.exists(bm):
+        with zipfile.ZipFile(bm) as z:
+            for entry in z.infolist():
+                if entry.filename.startswith("assets/bettermodel/") and not entry.is_dir():
+                    target = os.path.join(root, *entry.filename.split("/"))
+                    os.makedirs(os.path.dirname(target), exist_ok=True)
+                    with z.open(entry) as src, open(target, "wb") as dst:
+                        shutil.copyfileobj(src, dst)
+
     zpath = os.path.join(OUT, "ArcanaPack.zip")
     with zipfile.ZipFile(zpath, "w", zipfile.ZIP_DEFLATED) as z:
         for dirpath, _, files in os.walk(root):
